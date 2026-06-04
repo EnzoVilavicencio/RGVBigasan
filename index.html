@@ -23,7 +23,7 @@ nav button.active,nav button:hover{background:var(--primary-light);color:#fff}
 .badge{background:var(--danger);color:#fff;border-radius:50%;font-size:.65rem;padding:1px 5px;margin-left:4px}
 main{padding:16px;max-width:1200px;margin:auto}
 .page{display:none}.page.active{display:block}
-h2{font-size:1.1rem;color:var(--primary-dark);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+h2{font-size:1.1rem;color:var(--primary-dark);margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .card{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.08);margin-bottom:16px}
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px}
 .stat{background:var(--card);border-radius:var(--radius);padding:14px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.08);border-left:4px solid var(--primary-light)}
@@ -46,7 +46,7 @@ input,select,textarea{border:1px solid var(--border);border-radius:6px;padding:7
 input:focus,select:focus{border-color:var(--primary-light);box-shadow:0 0 0 3px rgba(82,183,136,.15)}
 .btn{padding:8px 16px;border:none;border-radius:6px;cursor:pointer;font-size:.83rem;font-weight:600;transition:.2s;display:inline-flex;align-items:center;gap:6px}
 .btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-dark)}
-.btn-accent{background:var(--accent);color:#fff}.btn-accent:hover{background:#e07b3a}
+.btn-accent{background:var(--accent);color:#fff}
 .btn-danger{background:var(--danger);color:#fff}.btn-danger:hover{background:#c62828}
 .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text)}.btn-ghost:hover{background:var(--bg)}
 .btn-sm{padding:4px 10px;font-size:.76rem}
@@ -74,7 +74,7 @@ input:focus,select:focus{border-color:var(--primary-light);box-shadow:0 0 0 3px 
 .sale-type button.active{border-color:var(--primary);background:var(--primary);color:#fff}
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center}
 .modal-bg.open{display:flex}
-.modal{background:#fff;border-radius:12px;padding:24px;width:90%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.modal{background:#fff;border-radius:12px;padding:24px;width:90%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.2)}
 .modal h3{margin-bottom:16px;color:var(--primary-dark)}
 .alert{padding:10px 14px;border-radius:6px;font-size:.83rem;margin-bottom:10px}
 .alert.warn{background:#fff3cd;border:1px solid #ffc107;color:#856404}
@@ -90,10 +90,16 @@ input:focus,select:focus{border-color:var(--primary-light);box-shadow:0 0 0 3px 
 .tab.active{color:var(--primary);border-bottom-color:var(--primary)}
 .receipt{font-family:monospace;font-size:.82rem;background:#f9f9f9;border:1px dashed #ccc;border-radius:6px;padding:14px;white-space:pre-wrap}
 .step{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start}
-.step-num{background:var(--primary);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0}
+.step-num{background:var(--primary);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0;margin-top:2px}
 .step-body{font-size:.85rem;line-height:1.6}
 .step-body strong{color:var(--primary-dark)}
 code{background:#eee;padding:1px 5px;border-radius:3px;font-size:.8rem}
+.month-nav{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.month-nav button{background:var(--primary);color:#fff;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:.85rem;font-weight:600}
+.month-nav button:hover{background:var(--primary-dark)}
+.month-nav span{font-size:1rem;font-weight:700;color:var(--primary-dark);min-width:160px;text-align:center}
+.sale-edit-item{display:grid;grid-template-columns:1fr 80px 90px auto;gap:6px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:.83rem}
+.sale-edit-item span{font-weight:600}
 </style>
 </head>
 <body>
@@ -117,11 +123,19 @@ code{background:#eee;padding:1px 5px;border-radius:3px;font-size:.8rem}
 
 <!-- DASHBOARD -->
 <div class="page" id="page-dashboard">
-  <h2>📊 Dashboard <span style="font-size:.8rem;color:var(--muted);font-weight:400" id="dash-month"></span></h2>
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+    <h2 style="margin:0">📊 Dashboard</h2>
+    <div class="month-nav">
+      <button onclick="dashChangeMonth(-1)">◀ Prev</button>
+      <span id="dash-month-label">—</span>
+      <button onclick="dashChangeMonth(1)">Next ▶</button>
+      <input type="month" id="dash-month-picker" onchange="dashPickMonth()" style="border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:.83rem;width:145px"/>
+    </div>
+  </div>
   <div class="stat-grid" id="stat-grid"></div>
   <div class="chart-grid">
     <div class="card">
-      <div style="font-weight:700;font-size:.9rem;margin-bottom:10px;color:var(--primary-dark)">📈 Daily Sales (This Month)</div>
+      <div style="font-weight:700;font-size:.9rem;margin-bottom:10px;color:var(--primary-dark)">📈 Daily Sales</div>
       <div class="chart-wrap"><canvas id="salesChart"></canvas></div>
     </div>
     <div class="card">
@@ -197,11 +211,9 @@ code{background:#eee;padding:1px 5px;border-radius:3px;font-size:.8rem}
       <div class="tbl-wrap">
         <table>
           <thead>
-            <tr>
-              <th>ID</th><th>Category</th><th>Item Name</th><th>Supplier</th><th>Unit</th>
-              <th>Retail Stock</th><th>Wholesale Stock</th><th>Cost</th>
-              <th>Retail ₱</th><th>Wholesale ₱</th><th>Restock At</th><th>Status</th><th>Actions</th>
-            </tr>
+            <tr><th>ID</th><th>Category</th><th>Item Name</th><th>Supplier</th><th>Unit</th>
+            <th>Retail Stock</th><th>Wholesale Stock</th><th>Cost</th>
+            <th>Retail ₱</th><th>Wholesale ₱</th><th>Restock At</th><th>Status</th><th>Actions</th></tr>
           </thead>
           <tbody id="inv-body"></tbody>
         </table>
@@ -212,23 +224,13 @@ code{background:#eee;padding:1px 5px;border-radius:3px;font-size:.8rem}
     </div>
     <div id="inv-add-tab" style="display:none">
       <div class="form-grid">
-        <div class="form-group">
-          <label>Category</label>
-          <select id="f-cat">
-            <option>Food &amp; Drinks</option><option>Snacks</option><option>Condiments</option>
-            <option>Personal Care</option><option>Household</option><option>Tobacco</option>
-            <option>Load &amp; Bills</option><option>Other</option>
-          </select>
+        <div class="form-group"><label>Category</label>
+          <select id="f-cat"><option>Food &amp; Drinks</option><option>Snacks</option><option>Condiments</option><option>Personal Care</option><option>Household</option><option>Tobacco</option><option>Load &amp; Bills</option><option>Other</option></select>
         </div>
         <div class="form-group"><label>Item Name *</label><input id="f-name" placeholder="e.g. Rice (per kilo)"/></div>
         <div class="form-group"><label>Supplier</label><input id="f-supplier" placeholder="e.g. NFA"/></div>
-        <div class="form-group">
-          <label>Unit</label>
-          <select id="f-unit">
-            <option>pcs</option><option>kg</option><option>g</option><option>sack</option>
-            <option>pack</option><option>bottle</option><option>can</option><option>box</option>
-            <option>sachet</option><option>liter</option><option>dozen</option><option>bundle</option>
-          </select>
+        <div class="form-group"><label>Unit</label>
+          <select id="f-unit"><option>pcs</option><option>kg</option><option>g</option><option>sack</option><option>pack</option><option>bottle</option><option>can</option><option>box</option><option>sachet</option><option>liter</option><option>dozen</option><option>bundle</option></select>
         </div>
         <div class="form-group"><label>Retail Stock</label><input type="number" id="f-rstock" value="0" min="0"/></div>
         <div class="form-group"><label>Wholesale Stock</label><input type="number" id="f-wstock" value="0" min="0"/></div>
@@ -250,17 +252,18 @@ code{background:#eee;padding:1px 5px;border-radius:3px;font-size:.8rem}
   <h2>📋 Sales History</h2>
   <div class="card">
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
-      <div class="form-group" style="flex:1;min-width:140px"><label>From</label><input type="date" id="h-from"/></div>
-      <div class="form-group" style="flex:1;min-width:140px"><label>To</label><input type="date" id="h-to"/></div>
-      <div class="form-group" style="flex:1;min-width:140px"><label>Search Item</label><input type="text" id="h-search" placeholder="Item name..."/></div>
-      <div style="display:flex;align-items:flex-end">
+      <div class="form-group" style="flex:1;min-width:130px"><label>From</label><input type="date" id="h-from"/></div>
+      <div class="form-group" style="flex:1;min-width:130px"><label>To</label><input type="date" id="h-to"/></div>
+      <div class="form-group" style="flex:1;min-width:130px"><label>Search Item</label><input type="text" id="h-search" placeholder="Item name..."/></div>
+      <div style="display:flex;align-items:flex-end;gap:6px">
         <button class="btn btn-primary" onclick="renderHistory()">🔍 Filter</button>
+        <button class="btn btn-ghost" onclick="clearHistoryFilter()">Clear</button>
       </div>
     </div>
     <div class="tbl-wrap">
       <table>
         <thead>
-          <tr><th>Date</th><th>Type</th><th>Items</th><th>Total</th><th>Tendered</th><th>Change</th></tr>
+          <tr><th>Date</th><th>Type</th><th>Items</th><th>Total</th><th>Tendered</th><th>Change</th><th>Actions</th></tr>
         </thead>
         <tbody id="history-body"></tbody>
       </table>
@@ -275,11 +278,14 @@ code{background:#eee;padding:1px 5px;border-radius:3px;font-size:.8rem}
 <div class="page" id="page-costs">
   <h2>💸 Monthly Operational Costs</h2>
   <div class="card">
-    <div style="margin-bottom:10px;font-size:.85rem;color:var(--muted)">Enter monthly operating expenses. These are used in profit calculations.</div>
-    <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-      <div class="form-group" style="flex:0 0 160px"><label>Month</label><input type="month" id="cost-month"/></div>
-      <div style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="loadCostMonth()">Load</button></div>
+    <div style="margin-bottom:12px;font-size:.85rem;color:var(--muted)">Enter monthly operating expenses. These feed into the profit calculation on the Dashboard.</div>
+    <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:14px;flex-wrap:wrap">
+      <div class="form-group" style="flex:0 0 170px"><label>Select Month</label><input type="month" id="cost-month"/></div>
+      <button class="btn btn-ghost" onclick="loadCostMonth()">Load</button>
+      <button class="btn btn-ghost" onclick="costChangeMonth(-1)">◀ Prev</button>
+      <button class="btn btn-ghost" onclick="costChangeMonth(1)">Next ▶</button>
     </div>
+    <div id="cost-month-label" style="font-weight:700;color:var(--primary-dark);margin-bottom:12px;font-size:.95rem"></div>
     <div class="form-grid">
       <div class="form-group"><label>Rent (₱)</label><input type="number" id="c-rent" value="0" min="0"/></div>
       <div class="form-group"><label>Employee Salaries (₱)</label><input type="number" id="c-salary" value="0" min="0"/></div>
@@ -287,16 +293,17 @@ code{background:#eee;padding:1px 5px;border-radius:3px;font-size:.8rem}
       <div class="form-group"><label>Water (₱)</label><input type="number" id="c-water" value="0" min="0"/></div>
       <div class="form-group"><label>Miscellaneous (₱)</label><input type="number" id="c-misc" value="0" min="0"/></div>
     </div>
-    <div class="btn-group"><button class="btn btn-primary" onclick="saveCosts()">💾 Save Costs</button></div>
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="saveCosts()">💾 Save Costs</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteCosts()">🗑️ Delete This Month</button>
+    </div>
     <div id="cost-msg" style="margin-top:10px"></div>
   </div>
   <div class="card">
-    <div style="font-weight:700;margin-bottom:10px;color:var(--primary-dark)">📅 Cost History</div>
+    <div style="font-weight:700;margin-bottom:10px;color:var(--primary-dark)">📅 All Monthly Costs</div>
     <div class="tbl-wrap">
       <table>
-        <thead>
-          <tr><th>Month</th><th>Rent</th><th>Salary</th><th>Electricity</th><th>Water</th><th>Misc</th><th>Total</th></tr>
-        </thead>
+        <thead><tr><th>Month</th><th>Rent</th><th>Salary</th><th>Electricity</th><th>Water</th><th>Misc</th><th>Total</th><th>Actions</th></tr></thead>
         <tbody id="cost-history-body"></tbody>
       </table>
     </div>
@@ -311,23 +318,22 @@ code{background:#eee;padding:1px 5px;border-radius:3px;font-size:.8rem}
     <br>
     <div style="font-weight:700;margin-bottom:12px;color:var(--primary-dark)">Option A: GitHub Pages (Recommended — Free Forever)</div>
     <div class="step"><div class="step-num">1</div><div class="step-body">Go to <strong>github.com</strong> and create a free account.</div></div>
-    <div class="step"><div class="step-num">2</div><div class="step-body">Click <strong>New Repository</strong>. Name it <code>tindahan-pos</code>. Set it to <strong>Public</strong>. Click Create.</div></div>
-    <div class="step"><div class="step-num">3</div><div class="step-body">Save this webpage as <code>index.html</code> on your computer (File → Save Page As in your browser).</div></div>
-    <div class="step"><div class="step-num">4</div><div class="step-body">In your GitHub repo, click <strong>Add file → Upload files</strong>. Upload <code>index.html</code>. Click Commit.</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body">Click <strong>New Repository</strong>. Name it <code>tindahan-pos</code>. Set to <strong>Public</strong>. Click Create.</div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body">Save this webpage as <code>index.html</code> (File → Save Page As in your browser).</div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body">In your repo, click <strong>Add file → Upload files</strong>. Upload <code>index.html</code>. Click Commit.</div></div>
     <div class="step"><div class="step-num">5</div><div class="step-body">Go to <strong>Settings → Pages</strong>. Under "Source", select <code>main</code> branch. Click Save.</div></div>
-    <div class="step"><div class="step-num">6</div><div class="step-body">Your POS will be live at: <code>https://YOUR-USERNAME.github.io/tindahan-pos</code> 🎉</div></div>
+    <div class="step"><div class="step-num">6</div><div class="step-body">Your POS is live at: <code>https://YOUR-USERNAME.github.io/tindahan-pos</code> 🎉</div></div>
     <br>
-    <div style="font-weight:700;margin-bottom:12px;color:var(--primary-dark)">Option B: Netlify Drop (Fastest — 30 seconds)</div>
-    <div class="step"><div class="step-num">1</div><div class="step-body">Save this webpage as <code>index.html</code> on your computer.</div></div>
-    <div class="step"><div class="step-num">2</div><div class="step-body">Go to <strong>netlify.com/drop</strong> — no account needed!</div></div>
+    <div style="font-weight:700;margin-bottom:12px;color:var(--primary-dark)">Option B: Netlify Drop (Fastest — 30 seconds, no account needed)</div>
+    <div class="step"><div class="step-num">1</div><div class="step-body">Save this webpage as <code>index.html</code>.</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body">Go to <strong>netlify.com/drop</strong>.</div></div>
     <div class="step"><div class="step-num">3</div><div class="step-body">Drag and drop your <code>index.html</code> file. Done! You get a free URL instantly.</div></div>
     <br>
     <div style="font-weight:700;margin-bottom:8px;color:var(--primary-dark)">💡 Tips</div>
     <div style="font-size:.85rem;line-height:1.9">
       • Use <strong>Export CSV</strong> regularly to back up your data.<br>
       • Best used on a <strong>tablet or laptop</strong> at the counter.<br>
-      • Bookmark the deployed URL on your device for quick access.<br>
-      • Clearing browser data will erase stored info — <strong>Export CSV often!</strong>
+      • Clearing browser cache/data will erase stored info — <strong>Export CSV often!</strong>
     </div>
   </div>
 </div>
@@ -346,28 +352,18 @@ code{background:#eee;padding:1px 5px;border-radius:3px;font-size:.8rem}
   </div>
 </div>
 
-<!-- EDIT MODAL -->
+<!-- EDIT PRODUCT MODAL -->
 <div class="modal-bg" id="edit-modal">
   <div class="modal">
-    <h3>Edit Product</h3>
+    <h3>✏️ Edit Product</h3>
     <div class="form-grid">
-      <div class="form-group">
-        <label>Category</label>
-        <select id="e-cat">
-          <option>Food &amp; Drinks</option><option>Snacks</option><option>Condiments</option>
-          <option>Personal Care</option><option>Household</option><option>Tobacco</option>
-          <option>Load &amp; Bills</option><option>Other</option>
-        </select>
+      <div class="form-group"><label>Category</label>
+        <select id="e-cat"><option>Food &amp; Drinks</option><option>Snacks</option><option>Condiments</option><option>Personal Care</option><option>Household</option><option>Tobacco</option><option>Load &amp; Bills</option><option>Other</option></select>
       </div>
       <div class="form-group"><label>Item Name</label><input id="e-name"/></div>
       <div class="form-group"><label>Supplier</label><input id="e-supplier"/></div>
-      <div class="form-group">
-        <label>Unit</label>
-        <select id="e-unit">
-          <option>pcs</option><option>kg</option><option>g</option><option>sack</option>
-          <option>pack</option><option>bottle</option><option>can</option><option>box</option>
-          <option>sachet</option><option>liter</option><option>dozen</option><option>bundle</option>
-        </select>
+      <div class="form-group"><label>Unit</label>
+        <select id="e-unit"><option>pcs</option><option>kg</option><option>g</option><option>sack</option><option>pack</option><option>bottle</option><option>can</option><option>box</option><option>sachet</option><option>liter</option><option>dozen</option><option>bundle</option></select>
       </div>
       <div class="form-group"><label>Retail Stock</label><input type="number" id="e-rstock" min="0"/></div>
       <div class="form-group"><label>Wholesale Stock</label><input type="number" id="e-wstock" min="0"/></div>
@@ -379,6 +375,35 @@ code{background:#eee;padding:1px 5px;border-radius:3px;font-size:.8rem}
     <div class="btn-group">
       <button class="btn btn-primary" onclick="saveEdit()">💾 Save</button>
       <button class="btn btn-ghost" onclick="closeModal('edit-modal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT SALE MODAL -->
+<div class="modal-bg" id="edit-sale-modal">
+  <div class="modal">
+    <h3>✏️ Edit Sale Record</h3>
+    <div class="form-grid" style="margin-bottom:12px">
+      <div class="form-group"><label>Date</label><input type="date" id="es-date"/></div>
+      <div class="form-group"><label>Sale Type</label>
+        <select id="es-type"><option value="retail">Retail</option><option value="wholesale">Wholesale</option></select>
+      </div>
+      <div class="form-group"><label>Amount Tendered (₱)</label><input type="number" id="es-tendered" min="0" step="0.01"/></div>
+    </div>
+    <div style="font-weight:600;font-size:.83rem;color:var(--muted);margin-bottom:6px">ITEMS SOLD</div>
+    <div style="display:grid;grid-template-columns:1fr 80px 90px auto;gap:6px;font-size:.75rem;font-weight:700;color:var(--muted);padding:0 0 4px 0">
+      <span>Item</span><span>Qty</span><span>Price (₱)</span><span></span>
+    </div>
+    <div id="es-items"></div>
+    <div class="btn-group" style="margin-top:8px">
+      <button class="btn btn-ghost btn-sm" onclick="addSaleEditItem()">➕ Add Item</button>
+    </div>
+    <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-weight:700">
+      <span>Total:</span><span id="es-total-display">₱0.00</span>
+    </div>
+    <div class="btn-group" style="margin-top:14px">
+      <button class="btn btn-primary" onclick="saveSaleEdit()">💾 Save Changes</button>
+      <button class="btn btn-ghost" onclick="closeModal('edit-sale-modal')">Cancel</button>
     </div>
   </div>
 </div>
@@ -399,18 +424,18 @@ code{background:#eee;padding:1px 5px;border-radius:3px;font-size:.8rem}
 var S = { products: [], sales: [], costs: {}, nextId: 1 };
 var cart = [];
 var saleType = 'retail';
-var editingId = null;
+var editingProductId = null;
+var editingSaleId = null;
+var editingSaleItems = [];
 var charts = {};
+var dashYM = '';
 
 // ── PERSISTENCE ────────────────────────────────────────
-function saveData() {
-  try { localStorage.setItem('tindahan_pos', JSON.stringify(S)); } catch(e) {}
-}
+function saveData() { try { localStorage.setItem('tindahan_pos', JSON.stringify(S)); } catch(e) {} }
 function loadData() {
   try {
     var d = localStorage.getItem('tindahan_pos');
-    if (d) { S = JSON.parse(d); }
-    else { seedDemo(); }
+    if (d) { S = JSON.parse(d); } else { seedDemo(); }
   } catch(e) { seedDemo(); }
 }
 function seedDemo() {
@@ -428,16 +453,26 @@ function seedDemo() {
 // ── HELPERS ────────────────────────────────────────────
 function today() {
   var d = new Date();
-  var mm = String(d.getMonth()+1).padStart(2,'0');
-  var dd = String(d.getDate()).padStart(2,'0');
-  return d.getFullYear() + '-' + mm + '-' + dd;
+  return d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate());
 }
+function pad2(n) { return n < 10 ? '0'+n : ''+n; }
 function monthKey() {
   var d = new Date();
-  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+  return d.getFullYear() + '-' + pad2(d.getMonth()+1);
 }
 function peso(n) { return '₱' + parseFloat(n||0).toFixed(2); }
 function el(id) { return document.getElementById(id); }
+function fmtMonth(ym) {
+  var parts = ym.split('-');
+  var d = new Date(parseInt(parts[0]), parseInt(parts[1])-1, 1);
+  return d.toLocaleDateString('en-PH', {month:'long', year:'numeric'});
+}
+function ymAdd(ym, delta) {
+  var parts = ym.split('-');
+  var y = parseInt(parts[0]), m = parseInt(parts[1]) - 1;
+  var d = new Date(y, m + delta, 1);
+  return d.getFullYear() + '-' + pad2(d.getMonth()+1);
+}
 function getMonthSales(ym) {
   return S.sales.filter(function(s){ return s.date && s.date.startsWith(ym); });
 }
@@ -459,10 +494,21 @@ function goto(page) {
 }
 
 // ── DASHBOARD ──────────────────────────────────────────
+function dashChangeMonth(delta) {
+  dashYM = ymAdd(dashYM, delta);
+  renderDashboard();
+}
+function dashPickMonth() {
+  var v = el('dash-month-picker').value;
+  if (v) { dashYM = v; renderDashboard(); }
+}
+
 function renderDashboard() {
-  var ym = monthKey();
-  el('dash-month').textContent = new Date().toLocaleDateString('en-PH',{month:'long',year:'numeric'});
-  var ms = getMonthSales(ym);
+  if (!dashYM) dashYM = monthKey();
+  el('dash-month-label').textContent = fmtMonth(dashYM);
+  el('dash-month-picker').value = dashYM;
+
+  var ms = getMonthSales(dashYM);
   var revenue = ms.reduce(function(a,s){ return a+s.total; }, 0);
   var cogs = ms.reduce(function(a,s){
     return a + s.items.reduce(function(b,i){
@@ -470,43 +516,49 @@ function renderDashboard() {
       return b + (p ? p.cost * i.qty : 0);
     }, 0);
   }, 0);
-  var ops = S.costs[ym] || {};
+  var ops = S.costs[dashYM] || {};
   var opTotal = (+ops.rent||0)+(+ops.salary||0)+(+ops.elec||0)+(+ops.water||0)+(+ops.misc||0);
   var profit = revenue - cogs - opTotal;
   var low = S.products.filter(function(p){ return p.rstock<=p.restock && p.rstock>0; }).length;
   var out = S.products.filter(function(p){ return p.rstock===0; }).length;
 
   el('stat-grid').innerHTML =
-    '<div class="stat"><div class="val">'+peso(revenue)+'</div><div class="lbl">Monthly Revenue</div></div>'+
-    '<div class="stat accent"><div class="val">'+peso(cogs)+'</div><div class="lbl">Cost of Goods</div></div>'+
-    '<div class="stat warn"><div class="val">'+peso(opTotal)+'</div><div class="lbl">Operating Costs</div></div>'+
-    '<div class="stat '+(profit>=0?'':'danger')+'"><div class="val">'+peso(profit)+'</div><div class="lbl">Net Profit</div></div>'+
-    '<div class="stat"><div class="val">'+ms.length+'</div><div class="lbl">Transactions</div></div>'+
-    '<div class="stat warn"><div class="val">'+low+'</div><div class="lbl">Low Stock Items</div></div>'+
-    '<div class="stat danger"><div class="val">'+out+'</div><div class="lbl">Out of Stock</div></div>';
+    stat(peso(revenue),'Monthly Revenue','') +
+    stat(peso(cogs),'Cost of Goods','accent') +
+    stat(peso(opTotal),'Operating Costs','warn') +
+    stat(peso(profit),'Net Profit', profit>=0?'':'danger') +
+    stat(ms.length,'Transactions','') +
+    stat(low,'Low Stock Items','warn') +
+    stat(out,'Out of Stock','danger');
 
   el('profit-detail').innerHTML =
-    '<div style="display:grid;gap:6px">'+
-    '<div style="display:flex;justify-content:space-between"><span>Revenue</span><strong>'+peso(revenue)+'</strong></div>'+
-    '<div style="display:flex;justify-content:space-between"><span>− Cost of Goods</span><strong style="color:var(--danger)">'+peso(cogs)+'</strong></div>'+
-    '<div style="display:flex;justify-content:space-between"><span>− Operating Costs</span><strong style="color:var(--danger)">'+peso(opTotal)+'</strong></div>'+
-    '<div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:6px;margin-top:4px">'+
-    '<span><strong>Net Profit</strong></span><strong style="color:'+(profit>=0?'var(--primary-dark)':'var(--danger)')+'">'+peso(profit)+'</strong></div></div>';
+    '<div style="display:grid;gap:8px">'+
+    profitRow('Revenue', peso(revenue), '') +
+    profitRow('− Cost of Goods', peso(cogs), 'var(--danger)') +
+    profitRow('− Operating Costs', peso(opTotal), 'var(--danger)') +
+    '<div style="display:flex;justify-content:space-between;border-top:2px solid var(--border);padding-top:8px;margin-top:4px">'+
+    '<strong>Net Profit</strong><strong style="color:'+(profit>=0?'var(--primary-dark)':'var(--danger)')+'">'+peso(profit)+'</strong></div></div>';
 
   var lowItems = S.products.filter(function(p){ return p.rstock <= p.restock; });
   el('low-stock-alerts').innerHTML = lowItems.length
     ? '<div style="font-weight:700;margin-bottom:8px">⚠️ Stock Alerts</div>' +
       lowItems.map(function(p){
         return '<div class="alert '+(p.rstock===0?'danger':'warn')+'"><strong>'+p.name+'</strong> — '+
-          (p.rstock===0 ? 'OUT OF STOCK' : 'Only '+p.rstock+' '+p.unit+' left (restock at '+p.restock+')')+'</div>';
+          (p.rstock===0?'OUT OF STOCK':'Only '+p.rstock+' '+p.unit+' left (restock at '+p.restock+')')+'</div>';
       }).join('')
     : '<div style="color:var(--muted);font-size:.85rem">✅ All stocks are healthy.</div>';
 
-  buildCharts(ym, ms);
+  buildCharts(dashYM, ms);
+}
+
+function stat(val, lbl, cls) {
+  return '<div class="stat '+cls+'"><div class="val">'+val+'</div><div class="lbl">'+lbl+'</div></div>';
+}
+function profitRow(lbl, val, color) {
+  return '<div style="display:flex;justify-content:space-between"><span>'+lbl+'</span><strong'+(color?' style="color:'+color+'"':'')+'>'+val+'</strong></div>';
 }
 
 function buildCharts(ym, ms) {
-  // Daily sales
   var days = {};
   ms.forEach(function(s){ var d=s.date.split('T')[0]; days[d]=(days[d]||0)+s.total; });
   var dkeys = Object.keys(days).sort();
@@ -516,18 +568,14 @@ function buildCharts(ym, ms) {
       borderColor:'#52b788',backgroundColor:'rgba(82,183,136,.15)',fill:true,tension:.4,pointRadius:3}]
   },{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}});
 
-  // Top products
   var prod = {};
-  ms.forEach(function(s){
-    s.items.forEach(function(i){ prod[i.name]=(prod[i.name]||0)+(i.price*i.qty); });
-  });
+  ms.forEach(function(s){ s.items.forEach(function(i){ prod[i.name]=(prod[i.name]||0)+(i.price*i.qty); }); });
   var sorted = Object.entries(prod).sort(function(a,b){ return b[1]-a[1]; }).slice(0,6);
   rebuildChart('topChart','bar',{
-    labels: sorted.map(function(x){ return x[0].length>12?x[0].slice(0,12)+'…':x[0]; }),
+    labels: sorted.map(function(x){ return x[0].length>14?x[0].slice(0,14)+'…':x[0]; }),
     datasets:[{label:'Revenue',data:sorted.map(function(x){ return x[1]; }),backgroundColor:'#52b788'}]
   },{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}});
 
-  // Stock status
   var ok  = S.products.filter(function(p){ return p.rstock>p.restock; }).length;
   var low = S.products.filter(function(p){ return p.rstock<=p.restock && p.rstock>0; }).length;
   var out = S.products.filter(function(p){ return p.rstock===0; }).length;
@@ -538,10 +586,9 @@ function buildCharts(ym, ms) {
 }
 
 function rebuildChart(id, type, data, options) {
-  var ctx = el(id);
-  if (!ctx) return;
+  var c = el(id); if (!c) return;
   if (charts[id]) { charts[id].destroy(); delete charts[id]; }
-  charts[id] = new Chart(ctx.getContext('2d'), {
+  charts[id] = new Chart(c.getContext('2d'), {
     type: type, data: data,
     options: Object.assign({responsive:true,maintainAspectRatio:false}, options)
   });
@@ -556,313 +603,334 @@ function setSaleType(t) {
 }
 
 function renderProducts() {
-  var q = (el('product-search')||{value:''}).value.toLowerCase();
+  var q = el('product-search').value.toLowerCase();
   var grid = el('product-grid');
   var prods = S.products.filter(function(p){ return p.name.toLowerCase().includes(q); });
   if (!prods.length) { grid.innerHTML='<div style="color:var(--muted);padding:20px;text-align:center">No products found</div>'; return; }
   grid.innerHTML = prods.map(function(p){
-    var price = saleType==='retail' ? p.rprice : p.wprice;
-    var stock = saleType==='retail' ? p.rstock : p.wstock;
-    var cls = stock===0 ? 'out' : stock<=p.restock ? 'low' : '';
-    var stIcon = stock===0 ? '❌' : stock<=p.restock ? '⚠️' : '';
+    var price = saleType==='retail'?p.rprice:p.wprice;
+    var stock = saleType==='retail'?p.rstock:p.wstock;
+    var cls = stock===0?'out':stock<=p.restock?'low':'';
     return '<div class="product-card '+cls+'" onclick="addToCart(\''+p.id+'\')">'+
       '<div class="pcat">'+p.cat+'</div>'+
       '<div class="pname">'+p.name+'</div>'+
       '<div class="pprice">'+peso(price)+'</div>'+
-      '<div class="pstock">'+stock+' '+p.unit+' '+stIcon+'</div>'+
-      '</div>';
+      '<div class="pstock">'+stock+' '+p.unit+(stock===0?' ❌':stock<=p.restock?' ⚠️':'')+'</div></div>';
   }).join('');
 }
 
 function addToCart(id) {
   var p = S.products.find(function(x){ return x.id===id; });
   if (!p) return;
-  var stock = saleType==='retail' ? p.rstock : p.wstock;
-  var price = saleType==='retail' ? p.rprice : p.wprice;
-  if (stock === 0) { alert('Out of stock!'); return; }
+  var stock = saleType==='retail'?p.rstock:p.wstock;
+  var price = saleType==='retail'?p.rprice:p.wprice;
+  if (stock===0) { alert('Out of stock!'); return; }
   var ex = cart.find(function(c){ return c.id===id; });
-  if (ex) {
-    if (ex.qty < stock) { ex.qty++; } else { alert('Not enough stock!'); return; }
-  } else {
-    cart.push({id:id, name:p.name, price:price, qty:1, unit:p.unit, maxQty:stock});
-  }
+  if (ex) { if(ex.qty<stock){ex.qty++;}else{alert('Not enough stock!');return;} }
+  else { cart.push({id:id,name:p.name,price:price,qty:1,unit:p.unit,maxQty:stock}); }
   renderCart();
 }
 
 function renderCart() {
   var wrap = el('cart-items');
   if (!cart.length) {
-    wrap.innerHTML = '<div style="color:var(--muted);font-size:.83rem;text-align:center;padding:20px">No items yet.<br>Tap a product to add.</div>';
-    el('cart-total').textContent = '₱0.00';
-    updateCartBadge(); return;
+    wrap.innerHTML='<div style="color:var(--muted);font-size:.83rem;text-align:center;padding:20px">No items yet.<br>Tap a product to add.</div>';
+    el('cart-total').textContent='₱0.00'; updateCartBadge(); return;
   }
   wrap.innerHTML = cart.map(function(c,i){
     return '<div class="cart-item">'+
       '<div class="ci-name">'+c.name+'<br><span style="font-size:.7rem;color:var(--muted)">'+peso(c.price)+' × '+c.qty+'</span></div>'+
       '<input class="ci-qty" type="number" value="'+c.qty+'" min="1" max="'+c.maxQty+'" onchange="updateQty('+i+',this.value)"/>'+
       '<div class="ci-price">'+peso(c.price*c.qty)+'</div>'+
-      '<button class="btn btn-danger btn-sm" onclick="removeFromCart('+i+')">✕</button>'+
-      '</div>';
+      '<button class="btn btn-danger btn-sm" onclick="removeFromCart('+i+')">✕</button></div>';
   }).join('');
-  var total = cart.reduce(function(a,c){ return a+c.price*c.qty; }, 0);
-  el('cart-total').textContent = peso(total);
+  el('cart-total').textContent = peso(cart.reduce(function(a,c){ return a+c.price*c.qty; },0));
   updateCartBadge(); calcChange();
 }
 
-function updateQty(i, v) {
-  var q = Math.max(1, Math.min(parseInt(v)||1, cart[i].maxQty));
-  cart[i].qty = q; renderCart();
+function updateQty(i,v){ cart[i].qty=Math.max(1,Math.min(parseInt(v)||1,cart[i].maxQty)); renderCart(); }
+function removeFromCart(i){ cart.splice(i,1); renderCart(); }
+function clearCart(){ cart=[]; renderCart(); }
+function updateCartBadge(){
+  var n=cart.reduce(function(a,c){ return a+c.qty; },0);
+  el('cart-badge').textContent=n; el('cart-badge').style.display=n?'inline':'none';
 }
-function removeFromCart(i) { cart.splice(i,1); renderCart(); }
-function clearCart() { cart = []; renderCart(); }
-function updateCartBadge() {
-  var b = el('cart-badge');
-  var n = cart.reduce(function(a,c){ return a+c.qty; }, 0);
-  b.textContent = n; b.style.display = n ? 'inline' : 'none';
-}
-function calcChange() {
-  var total = cart.reduce(function(a,c){ return a+c.price*c.qty; }, 0);
-  var t = parseFloat(el('tendered').value) || 0;
-  el('change-amt').textContent = peso(Math.max(0, t-total));
+function calcChange(){
+  var total=cart.reduce(function(a,c){ return a+c.price*c.qty; },0);
+  el('change-amt').textContent=peso(Math.max(0,(parseFloat(el('tendered').value)||0)-total));
 }
 
-function confirmSale() {
-  if (!cart.length) { alert('Cart is empty!'); return; }
-  var date = el('sale-date').value || today();
-  var total = cart.reduce(function(a,c){ return a+c.price*c.qty; }, 0);
-  var tendered = parseFloat(el('tendered').value) || total;
-  var change = Math.max(0, tendered-total);
-  var lowAlerts = [];
+function confirmSale(){
+  if(!cart.length){alert('Cart is empty!');return;}
+  var date=el('sale-date').value||today();
+  var total=cart.reduce(function(a,c){ return a+c.price*c.qty; },0);
+  var tendered=parseFloat(el('tendered').value)||total;
+  var change=Math.max(0,tendered-total);
+  var lowAlerts=[];
   cart.forEach(function(c){
-    var p = S.products.find(function(x){ return x.id===c.id; });
-    if (!p) return;
-    if (saleType==='retail') { p.rstock = Math.max(0, p.rstock-c.qty); if(p.rstock<=p.restock) lowAlerts.push(p); }
-    else { p.wstock = Math.max(0, p.wstock-c.qty); if(p.wstock<=p.restock) lowAlerts.push(p); }
+    var p=S.products.find(function(x){ return x.id===c.id; });
+    if(!p)return;
+    if(saleType==='retail'){p.rstock=Math.max(0,p.rstock-c.qty);if(p.rstock<=p.restock)lowAlerts.push(p);}
+    else{p.wstock=Math.max(0,p.wstock-c.qty);if(p.wstock<=p.restock)lowAlerts.push(p);}
   });
-  var sale = {id:'S'+Date.now(), date:date, type:saleType, items:cart.map(function(c){ return Object.assign({},c); }), total:total, tendered:tendered, change:change};
+  var sale={id:'S'+Date.now(),date:date,type:saleType,items:cart.map(function(c){ return Object.assign({},c); }),total:total,tendered:tendered,change:change};
   S.sales.push(sale); saveData();
-
-  var pad = function(s,n){ s=String(s); while(s.length<n) s+=' '; return s; };
-  var rpad = function(s,n){ s=String(s); while(s.length<n) s=' '+s; return s; };
-  var lines = [
-    '================================',
-    '         TINDAHAN POS           ',
-    '================================',
-    'Date: '+date,
-    'Type: '+(saleType==='retail'?'Retail':'Wholesale'),
-    '--------------------------------'
-  ];
-  sale.items.forEach(function(i){
-    lines.push(pad(i.name,16)+rpad(i.qty,3)+' x '+rpad(peso(i.price),7)+' = '+rpad(peso(i.price*i.qty),8));
-  });
-  lines.push('--------------------------------');
-  lines.push('TOTAL:   '+rpad(peso(total),22));
-  lines.push('Tendered:'+rpad(peso(tendered),22));
-  lines.push('Change:  '+rpad(peso(change),22));
-  lines.push('================================');
-  lines.push('  Salamat! Come again! 😊  ');
-  lines.push('================================');
-  el('receipt-content').textContent = lines.join('\n');
+  var r=['================================','         TINDAHAN POS','================================','Date: '+date,'Type: '+(saleType==='retail'?'Retail':'Wholesale'),'--------------------------------'];
+  sale.items.forEach(function(i){ r.push(rpad(i.name,16)+' x'+lpad(i.qty,3)+' @ '+lpad(peso(i.price),8)+' = '+lpad(peso(i.price*i.qty),9)); });
+  r.push('--------------------------------'); r.push('TOTAL    '+lpad(peso(total),22)); r.push('Tendered '+lpad(peso(tendered),22)); r.push('Change   '+lpad(peso(change),22));
+  r.push('================================'); r.push('  Salamat! Come again! 😊'); r.push('================================');
+  el('receipt-content').textContent=r.join('\n');
   openModal('receipt-modal');
-
-  if (lowAlerts.length) {
-    el('alert-modal-content').innerHTML = lowAlerts.map(function(p){
-      var s = saleType==='retail'?p.rstock:p.wstock;
+  if(lowAlerts.length){
+    el('alert-modal-content').innerHTML=lowAlerts.map(function(p){
+      var s=saleType==='retail'?p.rstock:p.wstock;
       return '<div class="alert '+(s===0?'danger':'warn')+'"><strong>'+p.name+'</strong> — '+(s===0?'OUT OF STOCK!':'Only '+s+' '+p.unit+' left!')+'</div>';
     }).join('');
-    setTimeout(function(){ openModal('alert-modal'); }, 400);
+    setTimeout(function(){ openModal('alert-modal'); },400);
   }
-  cart = []; el('tendered').value = ''; renderCart(); renderProducts();
+  cart=[]; el('tendered').value=''; renderCart(); renderProducts();
 }
+function rpad(s,n){ s=String(s); return s.length>=n?s.slice(0,n):s+Array(n-s.length+1).join(' '); }
+function lpad(s,n){ s=String(s); return s.length>=n?s:Array(n-s.length+1).join(' ')+s; }
 
 // ── INVENTORY ──────────────────────────────────────────
-function invTab(t) {
-  el('tab-list').classList.toggle('active', t==='list');
-  el('tab-add').classList.toggle('active', t==='add');
-  el('inv-list-tab').style.display = t==='list' ? 'block' : 'none';
-  el('inv-add-tab').style.display  = t==='add'  ? 'block' : 'none';
-  if (t==='list') renderInventory();
+function invTab(t){
+  el('tab-list').classList.toggle('active',t==='list');
+  el('tab-add').classList.toggle('active',t==='add');
+  el('inv-list-tab').style.display=t==='list'?'block':'none';
+  el('inv-add-tab').style.display=t==='add'?'block':'none';
+  if(t==='list')renderInventory();
 }
 
-function renderInventory() {
-  var q = (el('inv-search')||{value:''}).value.toLowerCase();
-  var prods = S.products.filter(function(p){
-    return p.name.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q);
-  });
-  el('inv-body').innerHTML = prods.length ? prods.map(function(p){
-    var s = p.rstock===0 ? 'red' : p.rstock<=p.restock ? 'yellow' : 'green';
-    var sl = p.rstock===0 ? 'Out' : p.rstock<=p.restock ? 'Low' : 'OK';
-    return '<tr>'+
-      '<td><code>'+p.id+'</code></td><td>'+p.cat+'</td><td><strong>'+p.name+'</strong></td>'+
-      '<td>'+(p.supplier||'—')+'</td><td>'+p.unit+'</td>'+
-      '<td>'+p.rstock+'</td><td>'+p.wstock+'</td>'+
-      '<td>'+peso(p.cost)+'</td><td>'+peso(p.rprice)+'</td><td>'+(p.wprice?peso(p.wprice):'—')+'</td>'+
-      '<td>'+p.restock+'</td>'+
-      '<td><span class="tag '+s+'">'+sl+'</span></td>'+
+function renderInventory(){
+  var q=(el('inv-search')||{value:''}).value.toLowerCase();
+  var prods=S.products.filter(function(p){ return p.name.toLowerCase().includes(q)||p.cat.toLowerCase().includes(q); });
+  el('inv-body').innerHTML=prods.length?prods.map(function(p){
+    var sc=p.rstock===0?'red':p.rstock<=p.restock?'yellow':'green';
+    var sl=p.rstock===0?'Out':p.rstock<=p.restock?'Low':'OK';
+    return '<tr><td><code>'+p.id+'</code></td><td>'+p.cat+'</td><td><strong>'+p.name+'</strong></td><td>'+(p.supplier||'—')+'</td><td>'+p.unit+'</td>'+
+      '<td>'+p.rstock+'</td><td>'+p.wstock+'</td><td>'+peso(p.cost)+'</td><td>'+peso(p.rprice)+'</td><td>'+(p.wprice?peso(p.wprice):'—')+'</td><td>'+p.restock+'</td>'+
+      '<td><span class="tag '+sc+'">'+sl+'</span></td>'+
       '<td style="white-space:nowrap">'+
         '<button class="btn btn-ghost btn-sm" onclick="openEdit(\''+p.id+'\')">✏️ Edit</button> '+
         '<button class="btn btn-ghost btn-sm" onclick="restockItem(\''+p.id+'\')">➕ Restock</button> '+
-        '<button class="btn btn-danger btn-sm" onclick="deleteProduct(\''+p.id+'\')">🗑️</button>'+
-      '</td></tr>';
-  }).join('') : '<tr><td colspan="13" style="text-align:center;color:var(--muted);padding:20px">No products yet. Click "Add Product" to get started!</td></tr>';
+        '<button class="btn btn-danger btn-sm" onclick="deleteProduct(\''+p.id+'\')">🗑️</button></td></tr>';
+  }).join(''):'<tr><td colspan="13" style="text-align:center;color:var(--muted);padding:20px">No products yet. Click "Add Product"!</td></tr>';
 }
 
-function addProduct() {
-  var name = el('f-name').value.trim();
-  if (!name) { alert('Item name is required'); return; }
-  var idNum = String(S.nextId++);
-  while (idNum.length < 3) idNum = '0' + idNum;
-  var p = {
-    id: 'P'+idNum,
-    cat: el('f-cat').value,
-    name: name,
-    supplier: el('f-supplier').value,
-    unit: el('f-unit').value,
-    rstock: +el('f-rstock').value,
-    wstock: +el('f-wstock').value,
-    cost:   +el('f-cost').value,
-    rprice: +el('f-rprice').value,
-    wprice: +el('f-wprice').value,
-    restock:+el('f-restock').value
-  };
-  S.products.push(p); saveData();
-  el('f-name').value=''; el('f-supplier').value='';
-  ['f-rstock','f-wstock','f-cost','f-rprice','f-wprice'].forEach(function(id){ el(id).value=0; });
+function addProduct(){
+  var name=el('f-name').value.trim();
+  if(!name){alert('Item name is required');return;}
+  var n=String(S.nextId++); while(n.length<3)n='0'+n;
+  S.products.push({id:'P'+n,cat:el('f-cat').value,name:name,supplier:el('f-supplier').value,unit:el('f-unit').value,
+    rstock:+el('f-rstock').value,wstock:+el('f-wstock').value,cost:+el('f-cost').value,
+    rprice:+el('f-rprice').value,wprice:+el('f-wprice').value,restock:+el('f-restock').value});
+  saveData();
+  el('f-name').value='';el('f-supplier').value='';
+  ['f-rstock','f-wstock','f-cost','f-rprice','f-wprice'].forEach(function(id){el(id).value=0;});
   el('f-restock').value=5;
   invTab('list');
 }
 
-function openEdit(id) {
-  var p = S.products.find(function(x){ return x.id===id; });
-  if (!p) return;
-  editingId = id;
-  el('e-cat').value = p.cat;
-  el('e-name').value = p.name;
-  el('e-supplier').value = p.supplier||'';
-  el('e-unit').value = p.unit;
-  el('e-rstock').value = p.rstock;
-  el('e-wstock').value = p.wstock;
-  el('e-cost').value = p.cost;
-  el('e-rprice').value = p.rprice;
-  el('e-wprice').value = p.wprice;
-  el('e-restock').value = p.restock;
+function openEdit(id){
+  var p=S.products.find(function(x){ return x.id===id; });
+  if(!p)return;
+  editingProductId=id;
+  ['cat','name','supplier','unit','rstock','wstock','cost','rprice','wprice','restock'].forEach(function(k){ el('e-'+k).value=p[k]||0; });
   openModal('edit-modal');
 }
-
-function saveEdit() {
-  var p = S.products.find(function(x){ return x.id===editingId; });
-  if (!p) return;
-  p.cat     = el('e-cat').value;
-  p.name    = el('e-name').value;
-  p.supplier= el('e-supplier').value;
-  p.unit    = el('e-unit').value;
-  p.rstock  = +el('e-rstock').value;
-  p.wstock  = +el('e-wstock').value;
-  p.cost    = +el('e-cost').value;
-  p.rprice  = +el('e-rprice').value;
-  p.wprice  = +el('e-wprice').value;
-  p.restock = +el('e-restock').value;
-  saveData(); closeModal('edit-modal'); renderInventory();
+function saveEdit(){
+  var p=S.products.find(function(x){ return x.id===editingProductId; });
+  if(!p)return;
+  p.cat=el('e-cat').value;p.name=el('e-name').value;p.supplier=el('e-supplier').value;p.unit=el('e-unit').value;
+  ['rstock','wstock','cost','rprice','wprice','restock'].forEach(function(k){ p[k]=+el('e-'+k).value; });
+  saveData();closeModal('edit-modal');renderInventory();
 }
-
-function deleteProduct(id) {
-  if (!confirm('Delete this product?')) return;
-  S.products = S.products.filter(function(x){ return x.id!==id; });
-  saveData(); renderInventory();
+function deleteProduct(id){
+  if(!confirm('Delete this product?'))return;
+  S.products=S.products.filter(function(x){ return x.id!==id; });
+  saveData();renderInventory();
 }
-
-function restockItem(id) {
-  var p = S.products.find(function(x){ return x.id===id; });
-  if (!p) return;
-  var q = prompt('Restock "'+p.name+'"\nCurrent retail stock: '+p.rstock+' '+p.unit+'\nAdd how many?');
-  if (q===null) return;
-  var n = parseInt(q);
-  if (isNaN(n)||n<=0) { alert('Invalid quantity'); return; }
-  p.rstock += n; saveData(); renderInventory();
+function restockItem(id){
+  var p=S.products.find(function(x){ return x.id===id; });
+  if(!p)return;
+  var q=prompt('Restock "'+p.name+'"\nCurrent retail stock: '+p.rstock+' '+p.unit+'\nAdd how many?');
+  if(q===null)return;
+  var n=parseInt(q);
+  if(isNaN(n)||n<=0){alert('Invalid quantity');return;}
+  p.rstock+=n;saveData();renderInventory();
 }
-
-function exportCSV() {
-  var h = 'ID,Category,Name,Supplier,Unit,Retail Stock,Wholesale Stock,Cost,Retail Price,Wholesale Price,Restock At';
-  var rows = S.products.map(function(p){
-    return [p.id,p.cat,'"'+p.name+'"',p.supplier,p.unit,p.rstock,p.wstock,p.cost,p.rprice,p.wprice,p.restock].join(',');
-  });
-  downloadFile([h].concat(rows).join('\n'), 'inventory.csv');
+function exportCSV(){
+  var h='ID,Category,Name,Supplier,Unit,Retail Stock,Wholesale Stock,Cost,Retail Price,Wholesale Price,Restock At';
+  var rows=S.products.map(function(p){ return [p.id,p.cat,'"'+p.name+'"',p.supplier,p.unit,p.rstock,p.wstock,p.cost,p.rprice,p.wprice,p.restock].join(','); });
+  dlFile([h].concat(rows).join('\n'),'inventory.csv');
 }
 
 // ── HISTORY ────────────────────────────────────────────
-function renderHistory() {
-  var from = el('h-from').value;
-  var to   = el('h-to').value;
-  var q    = (el('h-search').value||'').toLowerCase();
-  var sales = S.sales.slice().sort(function(a,b){ return b.date.localeCompare(a.date); });
-  if (from) sales = sales.filter(function(s){ return s.date>=from; });
-  if (to)   sales = sales.filter(function(s){ return s.date<=to; });
-  if (q)    sales = sales.filter(function(s){ return s.items.some(function(i){ return i.name.toLowerCase().includes(q); }); });
-  el('history-body').innerHTML = sales.length ? sales.map(function(s){
+function renderHistory(){
+  var from=el('h-from').value, to=el('h-to').value, q=(el('h-search').value||'').toLowerCase();
+  var sales=S.sales.slice().sort(function(a,b){ return b.date.localeCompare(a.date); });
+  if(from)sales=sales.filter(function(s){ return s.date>=from; });
+  if(to)sales=sales.filter(function(s){ return s.date<=to; });
+  if(q)sales=sales.filter(function(s){ return s.items.some(function(i){ return i.name.toLowerCase().includes(q); }); });
+  el('history-body').innerHTML=sales.length?sales.map(function(s){
     return '<tr>'+
       '<td>'+s.date+'</td>'+
       '<td><span class="tag '+(s.type==='retail'?'green':'yellow')+'">'+(s.type==='retail'?'Retail':'Wholesale')+'</span></td>'+
       '<td style="font-size:.78rem">'+s.items.map(function(i){ return i.name+' ×'+i.qty; }).join(', ')+'</td>'+
-      '<td>'+peso(s.total)+'</td><td>'+peso(s.tendered)+'</td><td>'+peso(s.change)+'</td></tr>';
-  }).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">No sales found.</td></tr>';
+      '<td>'+peso(s.total)+'</td><td>'+peso(s.tendered)+'</td><td>'+peso(s.change)+'</td>'+
+      '<td style="white-space:nowrap">'+
+        '<button class="btn btn-ghost btn-sm" onclick="openEditSale(\''+s.id+'\')">✏️ Edit</button> '+
+        '<button class="btn btn-danger btn-sm" onclick="deleteSale(\''+s.id+'\')">🗑️</button>'+
+      '</td></tr>';
+  }).join(''):'<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">No sales found.</td></tr>';
 }
 
-function exportSalesCSV() {
-  var h = 'Sale ID,Date,Type,Items,Total,Tendered,Change';
-  var rows = S.sales.map(function(s){
-    return [s.id,s.date,s.type,'"'+s.items.map(function(i){ return i.name+'x'+i.qty; }).join(';')+'"',s.total,s.tendered,s.change].join(',');
-  });
-  downloadFile([h].concat(rows).join('\n'), 'sales.csv');
+function clearHistoryFilter(){
+  el('h-from').value='';el('h-to').value='';el('h-search').value='';renderHistory();
+}
+
+// ── EDIT SALE ──────────────────────────────────────────
+function openEditSale(id){
+  var s=S.sales.find(function(x){ return x.id===id; });
+  if(!s)return;
+  editingSaleId=id;
+  editingSaleItems=s.items.map(function(i){ return Object.assign({},i); });
+  el('es-date').value=s.date;
+  el('es-type').value=s.type;
+  el('es-tendered').value=s.tendered;
+  renderSaleEditItems();
+  openModal('edit-sale-modal');
+}
+
+function renderSaleEditItems(){
+  var total=0;
+  el('es-items').innerHTML=editingSaleItems.map(function(item,i){
+    total+=item.price*item.qty;
+    return '<div class="sale-edit-item">'+
+      '<input value="'+item.name+'" onchange="updateSaleEditField('+i+',\'name\',this.value)" style="font-size:.82rem"/>'+
+      '<input type="number" value="'+item.qty+'" min="1" onchange="updateSaleEditField('+i+',\'qty\',this.value)" style="font-size:.82rem"/>'+
+      '<input type="number" value="'+item.price+'" min="0" step="0.01" onchange="updateSaleEditField('+i+',\'price\',this.value)" style="font-size:.82rem"/>'+
+      '<button class="btn btn-danger btn-sm" onclick="removeSaleEditItem('+i+')">✕</button></div>';
+  }).join('');
+  el('es-total-display').textContent=peso(total);
+}
+
+function updateSaleEditField(i,field,val){
+  if(field==='qty'||field==='price') editingSaleItems[i][field]=field==='qty'?Math.max(1,parseInt(val)||1):parseFloat(val)||0;
+  else editingSaleItems[i][field]=val;
+  // recalc total display only
+  var total=editingSaleItems.reduce(function(a,it){ return a+it.price*it.qty; },0);
+  el('es-total-display').textContent=peso(total);
+}
+
+function removeSaleEditItem(i){ editingSaleItems.splice(i,1); renderSaleEditItems(); }
+
+function addSaleEditItem(){
+  editingSaleItems.push({id:'',name:'New Item',price:0,qty:1,unit:'pcs'});
+  renderSaleEditItems();
+}
+
+function saveSaleEdit(){
+  var s=S.sales.find(function(x){ return x.id===editingSaleId; });
+  if(!s)return;
+  if(!editingSaleItems.length){alert('Sale must have at least one item.');return;}
+  s.date=el('es-date').value;
+  s.type=el('es-type').value;
+  s.items=editingSaleItems.map(function(i){ return Object.assign({},i); });
+  s.total=s.items.reduce(function(a,i){ return a+i.price*i.qty; },0);
+  s.tendered=parseFloat(el('es-tendered').value)||s.total;
+  s.change=Math.max(0,s.tendered-s.total);
+  saveData(); closeModal('edit-sale-modal'); renderHistory();
+}
+
+function deleteSale(id){
+  if(!confirm('Delete this sale record? This cannot be undone.'))return;
+  S.sales=S.sales.filter(function(x){ return x.id!==id; });
+  saveData(); renderHistory();
+}
+
+function exportSalesCSV(){
+  var h='Sale ID,Date,Type,Items,Total,Tendered,Change';
+  var rows=S.sales.map(function(s){ return [s.id,s.date,s.type,'"'+s.items.map(function(i){ return i.name+'x'+i.qty; }).join(';')+'"',s.total,s.tendered,s.change].join(','); });
+  dlFile([h].concat(rows).join('\n'),'sales.csv');
 }
 
 // ── COSTS ──────────────────────────────────────────────
-function renderCosts() {
-  el('cost-month').value = monthKey();
+var costsYM = '';
+function costChangeMonth(delta){
+  costsYM=ymAdd(costsYM||monthKey(),delta);
+  el('cost-month').value=costsYM;
   loadCostMonth();
-  var keys = Object.keys(S.costs).sort().reverse();
-  el('cost-history-body').innerHTML = keys.length ? keys.map(function(k){
-    var c = S.costs[k];
-    var t = (+c.rent||0)+(+c.salary||0)+(+c.elec||0)+(+c.water||0)+(+c.misc||0);
-    return '<tr><td>'+k+'</td><td>'+peso(c.rent)+'</td><td>'+peso(c.salary)+'</td><td>'+peso(c.elec)+'</td><td>'+peso(c.water)+'</td><td>'+peso(c.misc)+'</td><td><strong>'+peso(t)+'</strong></td></tr>';
-  }).join('') : '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">No costs recorded yet.</td></tr>';
 }
 
-function loadCostMonth() {
-  var ym = el('cost-month').value;
-  var c = S.costs[ym] || {};
-  el('c-rent').value   = c.rent   || 0;
-  el('c-salary').value = c.salary || 0;
-  el('c-elec').value   = c.elec   || 0;
-  el('c-water').value  = c.water  || 0;
-  el('c-misc').value   = c.misc   || 0;
+function renderCosts(){
+  costsYM=costsYM||monthKey();
+  el('cost-month').value=costsYM;
+  loadCostMonth();
+  renderCostHistory();
 }
 
-function saveCosts() {
-  var ym = el('cost-month').value;
-  S.costs[ym] = {
-    rent:   +el('c-rent').value,
-    salary: +el('c-salary').value,
-    elec:   +el('c-elec').value,
-    water:  +el('c-water').value,
-    misc:   +el('c-misc').value
-  };
-  saveData(); renderCosts();
-  el('cost-msg').innerHTML = '<div class="alert success">✅ Costs saved!</div>';
-  setTimeout(function(){ el('cost-msg').innerHTML=''; }, 3000);
+function loadCostMonth(){
+  costsYM=el('cost-month').value||monthKey();
+  el('cost-month-label').textContent='Editing: '+fmtMonth(costsYM);
+  var c=S.costs[costsYM]||{};
+  el('c-rent').value=c.rent||0;
+  el('c-salary').value=c.salary||0;
+  el('c-elec').value=c.elec||0;
+  el('c-water').value=c.water||0;
+  el('c-misc').value=c.misc||0;
+}
+
+function saveCosts(){
+  var ym=el('cost-month').value;
+  S.costs[ym]={rent:+el('c-rent').value,salary:+el('c-salary').value,elec:+el('c-elec').value,water:+el('c-water').value,misc:+el('c-misc').value};
+  saveData(); renderCostHistory();
+  el('cost-msg').innerHTML='<div class="alert success">✅ Costs saved for '+fmtMonth(ym)+'!</div>';
+  setTimeout(function(){ el('cost-msg').innerHTML=''; },3000);
+}
+
+function deleteCosts(){
+  var ym=el('cost-month').value;
+  if(!S.costs[ym]){alert('No costs recorded for this month.');return;}
+  if(!confirm('Delete costs for '+fmtMonth(ym)+'?'))return;
+  delete S.costs[ym];
+  saveData(); loadCostMonth(); renderCostHistory();
+  el('cost-msg').innerHTML='<div class="alert warn">🗑️ Costs for '+fmtMonth(ym)+' deleted.</div>';
+  setTimeout(function(){ el('cost-msg').innerHTML=''; },3000);
+}
+
+function renderCostHistory(){
+  var keys=Object.keys(S.costs).sort().reverse();
+  el('cost-history-body').innerHTML=keys.length?keys.map(function(k){
+    var c=S.costs[k];
+    var t=(+c.rent||0)+(+c.salary||0)+(+c.elec||0)+(+c.water||0)+(+c.misc||0);
+    return '<tr><td>'+fmtMonth(k)+'</td><td>'+peso(c.rent)+'</td><td>'+peso(c.salary)+'</td><td>'+peso(c.elec)+'</td><td>'+peso(c.water)+'</td><td>'+peso(c.misc)+'</td><td><strong>'+peso(t)+'</strong></td>'+
+      '<td><button class="btn btn-ghost btn-sm" onclick="loadMonthFromHistory(\''+k+'\')">✏️ Edit</button>'+
+      ' <button class="btn btn-danger btn-sm" onclick="deleteCostByKey(\''+k+'\')">🗑️</button></td></tr>';
+  }).join(''):'<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:20px">No costs recorded yet.</td></tr>';
+}
+
+function loadMonthFromHistory(ym){
+  costsYM=ym; el('cost-month').value=ym; loadCostMonth();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function deleteCostByKey(ym){
+  if(!confirm('Delete costs for '+fmtMonth(ym)+'?'))return;
+  delete S.costs[ym]; saveData(); renderCostHistory();
 }
 
 // ── MODALS ─────────────────────────────────────────────
-function openModal(id)  { el(id).classList.add('open'); }
-function closeModal(id) { el(id).classList.remove('open'); }
-document.addEventListener('click', function(e){
-  if (e.target.classList.contains('modal-bg')) e.target.classList.remove('open');
-});
+function openModal(id){ el(id).classList.add('open'); }
+function closeModal(id){ el(id).classList.remove('open'); }
+document.addEventListener('click',function(e){ if(e.target.classList.contains('modal-bg'))e.target.classList.remove('open'); });
 
 // ── UTILS ──────────────────────────────────────────────
-function downloadFile(content, fname) {
-  var a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(content);
-  a.download = fname; a.click();
+function dlFile(content,fname){
+  var a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(content);
+  a.download=fname; a.click();
 }
 
 // ── INIT ───────────────────────────────────────────────
